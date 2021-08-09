@@ -1,3 +1,5 @@
+# Challenge requirements
+
 Given an arbitrary text document written in English, write a program that will generate a
 concordance, i.e. an alphabetical list of all word occurrences, labeled with word
 frequencies.
@@ -42,3 +44,60 @@ ff. word {3:1,1,2}
 gg. write {1:1}
 hh. written {1:1}
 ```
+
+# Planned action
+
+## Create the storage objects
+
+Create a `map[string]object`, with each word as the key
+
+object value will contain two items
+
+- count int
+- location []int
+
+create a list of strings to store input file into
+
+```
+type Concordance struct {
+    Sentences []Sentence
+}
+
+type Sentence []string 
+```
+
+## Read a file input
+
+Open a file named input.txt, and convert the contents into a string.
+
+## Split the string
+
+Split string by sentence split(".")
+
+Loop each sentence and split on spaces for each word
+
+Loop through array of words
+
+- remove any characters (: , ! " " etc)
+
+- append the slice of words (should now be []string) into `Sentences` of `Concordance`
+
+## loop through list of sentences
+
+range over each sentence []string
+
+- if doesn't exist in the map, add to the map
+
+    - increment count, add index of the sentence
+    
+- if exists in the map
+
+    - increment count, add index of the sentence
+    
+## Output
+
+range over map `key, value := range thing`
+
+create an array to just take the key to sort alphabetically
+
+call the map by the alphabetically sorted array, return the key, and value object {count,[]locaiton}
