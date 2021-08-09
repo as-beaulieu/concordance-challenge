@@ -78,7 +78,7 @@ Loop each sentence and split on spaces for each word
 
 Loop through array of words
 
-- remove any characters (: , ! " " etc)
+- remove any characters (: , ! " " etc) while leaving in apostrophes.
 
 - append the slice of words (should now be []string) into `Sentences` of `Concordance`
 
