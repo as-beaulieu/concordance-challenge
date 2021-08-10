@@ -30,7 +30,7 @@ type (
 
 func main() {
 	start := time.Now()
-	sentences, err := fileToString("input.txt")
+	sentences, err := fileToString("armageddon.txt")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -53,7 +53,7 @@ func bTokb(b uint64) uint64 {
 }
 
 func printConcordance(c concordance) error {
-	encodedFile, err := os.Create("concordance.txt")
+	encodedFile, err := os.Create("index.txt")
 	if err != nil {
 		return err
 	}
@@ -111,6 +111,7 @@ func sentencesToConcordance(sentences []string) concordance {
 
 	for sentenceIndex, sentence := range sentences {
 		words := strings.Split(sentence, " ")
+		//Need to scrub other non alphabetical characters " _ , ?
 		for _, word := range words {
 			lowerCaseWord := strings.ToLower(word)
 			d, exist := contents[lowerCaseWord]
