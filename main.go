@@ -133,7 +133,9 @@ func fileToString(fileName string) (sentences []string, err error) {
 	for s.Scan() {
 		r := s.Text()
 		if len(r) > 0 {
-			t := strings.Trim(r, ".")
+			t := strings.TrimFunc(r, func(x rune) bool {
+				return x == '!' || x == '.' || x == '?'
+			})
 			sentences = append(sentences, t)
 		}
 	}
