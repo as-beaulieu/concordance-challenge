@@ -3,10 +3,27 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"encoding/gob"
 	"fmt"
 	"os"
+	"sort"
+	"strconv"
 	"strings"
+)
+
+var (
+	concordance_index = []string{
+		"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+		"aa", "bb", "cc", "dd", "ee", "ff", "gg", "hh", "ii", "jj", "kk", "ll", "mm", "nn", "oo", "pp", "qq", "rr", "ss", "tt", "uu", "vv", "ww", "xx", "yy", "zz",
+	}
+)
+
+type (
+	Details struct {
+		Count     int
+		Locations []int
+	}
+
+	concordance map[string]Details
 )
 
 func main() {
@@ -15,53 +32,57 @@ func main() {
 		fmt.Println(err)
 	}
 
-	//fmt.Println(sentences)
-
 	contents := sentencesToConcordance(sentences)
-
-	//fmt.Println(contents)
 
 	printConcordance(contents)
 }
 
-type Details struct {
-	Count     int
-	Locations []int
-}
-
-type concordance map[string]Details
-
-func printConcordance(c concordance) {
+func printConcordance(c concordance) error {
 	encodedFile, err := os.Create("concordance.txt")
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 
-	e := gob.NewEncoder(encodedFile)
-
-	//Now convert the map to text
 	b := new(bytes.Buffer)
-	i := 0
-	for key, value := range c {
-		//a. a {2:1,1}
-		fmt.Fprintf(b, "%v. %v {%v:%v} \n", i, key, value.Count, value.Locations)
-		i++
+
+	keys := make([]string, 0, len(c))
+	for key := range c {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+
+	for i, key := range keys {
+		value := c[key]
+		locations := value.Locations
+		valuesText := make([]string, 0, len(locations))
+		for valueIdx := range locations {
+			number := locations[valueIdx]
+			text := strconv.Itoa(number)
+			valuesText = append(valuesText, text)
+		}
+		locationsDisplay := strings.Join(valuesText, ",")
+		fmt.Fprintf(b, "%v. %v {%v:%v} \n", concordance_index[i], key, value.Count, locationsDisplay)
 	}
 
-	if err := e.Encode(b.String()); err != nil {
-		fmt.Println(err)
-		return
+	wrote, err := encodedFile.WriteString(b.String())
+	if err != nil {
+		return err
 	}
+
+	fmt.Printf("wrote %d bytes \n", wrote)
+
+	if err := encodedFile.Sync(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func sentencesToConcordance(sentences []string) concordance {
 	contents := make(map[string]Details, 0)
 
 	for sentenceIndex, sentence := range sentences {
-		//fmt.Printf("Reading sentence #%d: %v \n", sentenceIndex, sentence)
 		words := strings.Split(sentence, " ")
-		//fmt.Printf("Reading words after space split: %v \n", words)
 		for _, word := range words {
 			lowerCaseWord := strings.ToLower(word)
 			d, exist := contents[lowerCaseWord]
@@ -82,15 +103,6 @@ func sentencesToConcordance(sentences []string) concordance {
 }
 
 func fileToString(fileName string) (sentences []string, err error) {
-	//file, err := ioutil.ReadFile(fileName)
-	//if err != nil {
-	//	return "", err
-	//}
-	//
-	//str := string(file)
-	//
-	//return str, nil
-
 	file, err := os.Open(fileName)
 	if err != nil {
 		return
