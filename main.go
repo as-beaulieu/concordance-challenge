@@ -68,7 +68,7 @@ func printConcordance(c concordance) error {
 			valuesText = append(valuesText, text)
 		}
 		locationsDisplay := strings.Join(valuesText, ",")
-		fmt.Fprintf(b, "%v. %v {%v:%v} \n", concordanceIndex(i), key, value.Count, locationsDisplay)
+		fmt.Fprintf(b, "%v. %v {%v:%v} \n", concordanceIndex(i+1), key, value.Count, locationsDisplay)
 	}
 
 	wrote, err := encodedFile.WriteString(b.String())
@@ -101,24 +101,33 @@ func sentencesToConcordance(sentences []string) concordance {
 
 	for sentenceIndex, sentence := range sentences {
 		words := strings.Split(sentence, " ")
-		//Need to scrub other non alphabetical characters " _ , ? (But only from the sides)
 		for _, word := range words {
-			lowerCaseWord := strings.ToLower(word)
-			d, exist := contents[lowerCaseWord]
+			cleanedWord := trimWord(word)
+			d, exist := contents[cleanedWord]
 			if exist {
 				d.Count++
 				d.Locations = append(d.Locations, sentenceIndex+1)
-				contents[lowerCaseWord] = d
+				contents[cleanedWord] = d
 			} else {
 				newDetails := Details{
 					Count:     1,
 					Locations: []int{sentenceIndex + 1},
 				}
-				contents[lowerCaseWord] = newDetails
+				contents[cleanedWord] = newDetails
 			}
 		}
 	}
 	return contents
+}
+
+func trimWord(word string) string {
+	trimmedWordLeft := strings.TrimLeftFunc(word, func(r rune) bool {
+		return r == '"' || r == '_' || r == ',' || r == '(' || r == ')' || r == '*' || r == '-'
+	})
+	trimmedWordRight := strings.TrimRightFunc(trimmedWordLeft, func(r rune) bool {
+		return r == '"' || r == '_' || r == ',' || r == '(' || r == ')' || r == '*' || r == '-'
+	})
+	return strings.ToLower(trimmedWordRight)
 }
 
 func fileToString(fileName string) (sentences []string, err error) {
