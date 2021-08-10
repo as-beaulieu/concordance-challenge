@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"os"
 	"strings"
@@ -13,40 +15,70 @@ func main() {
 		fmt.Println(err)
 	}
 
-	fmt.Println(sentences)
+	//fmt.Println(sentences)
 
-	contents := make(map[string]details, 0)
+	contents := sentencesToConcordance(sentences)
+
+	//fmt.Println(contents)
+
+	printConcordance(contents)
+}
+
+type Details struct {
+	Count     int
+	Locations []int
+}
+
+type concordance map[string]Details
+
+func printConcordance(c concordance) {
+	encodedFile, err := os.Create("concordance.txt")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	e := gob.NewEncoder(encodedFile)
+
+	//Now convert the map to text
+	b := new(bytes.Buffer)
+	i := 0
+	for key, value := range c {
+		//a. a {2:1,1}
+		fmt.Fprintf(b, "%v. %v {%v:%v} \n", i, key, value.Count, value.Locations)
+		i++
+	}
+
+	if err := e.Encode(b.String()); err != nil {
+		fmt.Println(err)
+		return
+	}
+}
+
+func sentencesToConcordance(sentences []string) concordance {
+	contents := make(map[string]Details, 0)
 
 	for sentenceIndex, sentence := range sentences {
-		fmt.Printf("Reading sentence #%d: %v \n", sentenceIndex, sentence)
+		//fmt.Printf("Reading sentence #%d: %v \n", sentenceIndex, sentence)
 		words := strings.Split(sentence, " ")
-		fmt.Printf("Reading words after space split: %v \n", words)
+		//fmt.Printf("Reading words after space split: %v \n", words)
 		for _, word := range words {
 			lowerCaseWord := strings.ToLower(word)
 			d, exist := contents[lowerCaseWord]
 			if exist {
-				//found
-				fmt.Println("HEY I WAS FOUND!!!: ", lowerCaseWord)
-				d.count++
-				d.locations = append(d.locations, sentenceIndex+1)
+				d.Count++
+				d.Locations = append(d.Locations, sentenceIndex+1)
 				contents[lowerCaseWord] = d
 			} else {
-				//not found
-				newDetails := details{
-					count:     1,
-					locations: []int{sentenceIndex + 1},
+				newDetails := Details{
+					Count:     1,
+					Locations: []int{sentenceIndex + 1},
 				}
 				contents[lowerCaseWord] = newDetails
 			}
 		}
 	}
-
-	fmt.Println(contents)
-}
-
-type details struct {
-	count     int
-	locations []int
+	return contents
 }
 
 func fileToString(fileName string) (sentences []string, err error) {
