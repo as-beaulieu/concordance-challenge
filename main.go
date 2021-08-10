@@ -5,9 +5,11 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -27,6 +29,7 @@ type (
 )
 
 func main() {
+	start := time.Now()
 	sentences, err := fileToString("input.txt")
 	if err != nil {
 		fmt.Println(err)
@@ -35,6 +38,18 @@ func main() {
 	contents := sentencesToConcordance(sentences)
 
 	printConcordance(contents)
+	fmt.Printf("Task completed in %v \n", time.Since(start))
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	// For info on each, see: https://golang.org/pkg/runtime/#MemStats
+	fmt.Printf("Alloc = %v kb", bTokb(m.Alloc))
+	fmt.Printf("\tTotalAlloc = %v kb", bTokb(m.TotalAlloc))
+	fmt.Printf("\tSys = %v kb", bTokb(m.Sys))
+	fmt.Printf("\tNum of GC cycles = %v\n", m.NumGC)
+}
+
+func bTokb(b uint64) uint64 {
+	return b / 1024
 }
 
 func printConcordance(c concordance) error {
@@ -61,7 +76,8 @@ func printConcordance(c concordance) error {
 			valuesText = append(valuesText, text)
 		}
 		locationsDisplay := strings.Join(valuesText, ",")
-		fmt.Fprintf(b, "%v. %v {%v:%v} \n", concordance_index[i], key, value.Count, locationsDisplay)
+		//fmt.Fprintf(b, "%v. %v {%v:%v} \n", concordance_index[i], key, value.Count, locationsDisplay)
+		fmt.Fprintf(b, "%v. %v {%v:%v} \n", concordanceIndex(i), key, value.Count, locationsDisplay)
 	}
 
 	wrote, err := encodedFile.WriteString(b.String())
@@ -76,6 +92,18 @@ func printConcordance(c concordance) error {
 	}
 
 	return nil
+}
+
+//does this have to be int32?
+func concordanceIndex(i int) (index string) {
+	i--
+	if firstLetter := i / 26; firstLetter > 0 {
+		index += concordanceIndex(firstLetter)
+		index += string(rune('a' + i%26))
+	} else {
+		index += string(rune('a' + i))
+	}
+	return
 }
 
 func sentencesToConcordance(sentences []string) concordance {
