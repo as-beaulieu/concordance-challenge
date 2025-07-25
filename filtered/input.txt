@@ -1,0 +1,42 @@
+About The Company
+
+Ambient combines a decade of operational experience with design and engineering prowess to improve apartment living and management in the most impactful, cost-effective way possible.
+
+The name "Ambient" embodies our vision to create a category-defining platform that seamlessly integrates smart technology into the built environment and transforms the way people live, visit, and work in multifamily communities. Our focus is on increasing the value of multifamily properties by making them more efficient to operate and more comfortable to live in.
+
+Overview
+
+We’re looking for an Engineering Manager to lead the Resident Team at Ambient — the team responsible for the software that powers how residents interact with smart devices in their homes. From locks and thermostats to light switches, the work your team does will directly shape the everyday experience of residents in Ambient-powered communities.
+
+This is a high-impact role for a hands-on leader who combines deep technical expertise with strong people management skills. You’ll be responsible for mentoring engineers across multiple disciplines, guiding architectural decisions, and ensuring execution stays aligned with product goals. You’ll also act as a connective force across product, design, quality, and operations to keep projects on track and communication clear.
+
+We value strategic thinkers and creative problem solvers — leaders who can work through ambiguity while elevating both the people and the systems they manage. If you’re excited to lead a mission-critical team at the intersection of software and devices, we’d love to hear from you.
+
+Responsibilities
+
+Build a high-performance and delivery-oriented team with a high bar for technical deliverables, velocity and ownership
+Influence architectural direction and technical decision-making across your domain
+Collaborate closely with Product Management, Design, Quality, DevOps and others teams to to define and deliver a clear, outcomes-focused roadmap
+Ensure project execution follows agile best practices, with strong technical documentation and project tracking using tools like Jira, Productboard, and Confluence
+Present team roadmap, progress and risks to Product and Engineering leadership
+Hire, coach, and grow engineers across levels—from early-career to senior talent—fostering career growth and technical excellence
+Champion a strong culture of engineering excellence, inclusion, and accountability
+Own the long-term technical health of your systems, including scalability, observability, and tech debt management
+Contribute to organizational learning and knowledge sharing through training and mentorship in internal forums
+
+Qualifications
+
+3+ years experience leading high-performing engineering teams as a first-line manager
+8-10+ years of hands-on experience building and scaling large scale distributed systems
+Proven ability to deliver multiple projects simultaneously using agile practices in fast-paced environments
+Experience managing teams of 6-10+ engineers across frontend, backend, and mobile
+Strong track record of setting high engineering standards in code quality, observability, and engineering excellence
+Skilled in driving team execution amid ambiguity, tight deadlines, and evolving priorities
+Strong communicator who can influence technical and non-technical stakeholders
+Demonstrated experience in hiring, developing, and retaining engineering talent
+Deep understanding of cloud infrastructure (ideally AWS) and modern system design patterns for scalability and resilience
+Proficiency with product development and collaboration tools (e.g., Jira, Productboard, Confluence, Google Docs, Figma, Testrails)
+Formal education in a technical discipline (BS/MS), or equivalent practical experience
+Passion for the smart home and smart apartment space, with curiosity for the evolving technology landscape
+Proficiency in Python and/or Golang preferred
+Nice-to-have: Exposure to IoT technologies or device protocols like Zigbee or Z-Wave
