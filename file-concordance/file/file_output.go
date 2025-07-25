@@ -2,8 +2,8 @@ package file
 
 import (
 	"bytes"
-	"concordance-challenge/concordance"
-	"concordance-challenge/indexing"
+	"concordance-challenge/file-concordance/concordance"
+	"concordance-challenge/file-concordance/indexing"
 	"fmt"
 	"os"
 	"sort"
