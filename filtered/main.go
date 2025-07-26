@@ -12,20 +12,43 @@ import (
 	"unicode"
 )
 
+var (
+	FilterActions   FilterCategory = "actions"
+	FilterLanguages FilterCategory = "language"
+	FilterTrivial   FilterCategory = "trivial"
+)
+
+type FilterCategory string
+
 type FiltersInput struct {
-	Trivial []string `json:"trivial"`
+	Actions   []string `json:"actions"`
+	Languages []string `json:"languages"`
+	Trivial   []string `json:"trivial"`
 }
 
 type FilterParameters struct {
-	trivial map[string]bool
+	actions   map[string]bool
+	languages map[string]bool
+	trivial   map[string]bool
+}
+
+type Processes struct {
+	fileProcess      chan string
+	actionsProcess   chan string
+	languagesProcess chan string
+	othersProcess    chan string
 }
 
 func main() {
-	fileProcess := make(chan string)
-	listProcess := make(chan string)
+	processes := Processes{
+		fileProcess:      make(chan string),
+		actionsProcess:   make(chan string),
+		languagesProcess: make(chan string),
+		othersProcess:    make(chan string),
+	}
 
 	var wg sync.WaitGroup
-	var result map[string]int
+	var actionsList, languagesList, othersList map[string]int
 
 	// only want keywords, so no reason to keep non-context words (and, the, etc.)
 	// we'll grab a list of filters from a json file
@@ -35,31 +58,57 @@ func main() {
 		log.Fatal(err)
 	}
 
-	wg.Add(3)
-	go ReadFile(&wg, fileProcess)
+	wg.Add(5)
+	go func() {
+		defer wg.Done()
+		ReadFile(processes.fileProcess)
+	}()
 
-	go FilterWords(&wg, fileProcess, listProcess, filters)
+	go FilterWords(&wg, processes, filters)
+
+	// "fan out" - pattern which spreads work out to multiple paths
+	go func() {
+		defer wg.Done()
+		actionsList = BuildList(processes.actionsProcess)
+	}()
 
 	go func() {
-		result = BuildList(listProcess)
-		wg.Done()
+		defer wg.Done()
+		languagesList = BuildList(processes.languagesProcess)
+	}()
+
+	go func() {
+		defer wg.Done()
+		othersList = BuildList(processes.othersProcess)
 	}()
 
 	wg.Wait()
 
-	fmt.Println(result)
+	fmt.Println("actionsList: ", actionsList)
+	fmt.Println("languagesList: ", languagesList)
+	fmt.Println("othersList: ", othersList)
 	fmt.Println("Done")
 }
 
-func FilterWords(wg *sync.WaitGroup, fileProcess, listProcess chan string, filters FilterParameters) {
-	defer close(listProcess)
-	for line := range fileProcess {
+func FilterWords(wg *sync.WaitGroup, processes Processes, filters FilterParameters) {
+	defer close(processes.actionsProcess)
+	defer close(processes.languagesProcess)
+	defer close(processes.othersProcess)
+	for line := range processes.fileProcess {
 		spaceSplit := strings.Split(line, " ")
 		for _, word := range spaceSplit {
-			if skip := ApplyFilters(word, filters); skip {
+			lowerWord := strings.ToLower(word)
+			filter := ApplyFilters(lowerWord, filters)
+			switch {
+			case filter == FilterActions:
+				processes.actionsProcess <- lowerWord
+			case filter == FilterLanguages:
+				processes.languagesProcess <- lowerWord
+			case filter == FilterTrivial:
 				continue
+			default:
+				processes.othersProcess <- lowerWord
 			}
-			listProcess <- word
 		}
 	}
 
@@ -69,25 +118,30 @@ func FilterWords(wg *sync.WaitGroup, fileProcess, listProcess chan string, filte
 func BuildList(listProcess chan string) map[string]int {
 	list := make(map[string]int)
 	for word := range listProcess {
-		lowerWord := strings.ToLower(word)
-		if _, here := list[lowerWord]; here {
-			list[lowerWord]++
+		if _, here := list[word]; here {
+			list[word]++
 		} else {
-			list[lowerWord] = 1
+			list[word] = 1
 		}
 	}
 
 	return list
 }
 
-func ApplyFilters(word string, filters FilterParameters) bool {
-	if _, here := filters.trivial[word]; here {
-		return true
+func ApplyFilters(word string, filters FilterParameters) FilterCategory {
+	if _, here := filters.actions[word]; here {
+		return FilterActions
 	}
-	return false
+	if _, here := filters.languages[word]; here {
+		return FilterLanguages
+	}
+	if _, here := filters.trivial[word]; here {
+		return FilterTrivial
+	}
+	return ""
 }
 
-func ReadFile(wg *sync.WaitGroup, fileProcess chan string) {
+func ReadFile(fileProcess chan string) {
 	defer close(fileProcess)
 	// for safety against larger files, opting for streaming file line by line
 	file, err := os.Open("input.txt")
@@ -96,10 +150,8 @@ func ReadFile(wg *sync.WaitGroup, fileProcess chan string) {
 	}
 	defer file.Close()
 
-	// Create a new Scanner to read the file line by line
 	scanner := bufio.NewScanner(file)
 
-	// Iterate through each line
 	for scanner.Scan() {
 		line := scanner.Text()
 		var cleaned strings.Builder
@@ -118,7 +170,6 @@ func ReadFile(wg *sync.WaitGroup, fileProcess chan string) {
 	if err := scanner.Err(); err != nil {
 		log.Fatalf("Error during scanning: %v", err)
 	}
-	wg.Done()
 }
 
 func ReadFilters() (FilterParameters, error) {
@@ -142,12 +193,22 @@ func ReadFilters() (FilterParameters, error) {
 		return FilterParameters{}, err
 	}
 
+	actionKeys := make(map[string]bool)
+	for _, action := range filters.Actions {
+		actionKeys[action] = true
+	}
+	languagesKeys := make(map[string]bool)
+	for _, language := range filters.Languages {
+		languagesKeys[language] = true
+	}
 	trivialKeys := make(map[string]bool)
 	for _, trivialWord := range filters.Trivial {
 		trivialKeys[trivialWord] = true
 	}
 
 	return FilterParameters{
-		trivial: trivialKeys,
+		actions:   actionKeys,
+		languages: languagesKeys,
+		trivial:   trivialKeys,
 	}, nil
 }
