@@ -1,6 +1,8 @@
 {
   "trivial": [
+    "",
     "a",
+    "about",
     "also",
     "amid",
     "an",
@@ -13,8 +15,12 @@
     "but",
     "by",
     "can",
+    "company",
+    "eg",
     "for",
+    "from",
     "have",
+    "hear",
     "how",
     "if",
     "in",
@@ -31,7 +37,11 @@
     "of",
     "on",
     "our",
+    "that",
     "the",
+    "their",
+    "them",
+    "they",
     "this",
     "through",
     "to",
@@ -39,8 +49,32 @@
     "we",
     "who",
     "will",
+    "with",
     "you",
     "youll",
     "your"
+  ],
+  "languages": [
+    "c",
+    "go",
+    "golang",
+    "java",
+    "javascript",
+    "kotlin",
+    "net",
+    "python",
+    "react",
+    "vue"
+  ],
+  "actions": [
+    "lead",
+    "leading",
+    "management",
+    "manager",
+    "mentor",
+    "mentoring",
+    "tracking",
+    "training",
+    "understanding"
   ]
 }
