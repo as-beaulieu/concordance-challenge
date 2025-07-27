@@ -1,4 +1,66 @@
 {
+  "actions": [
+    "backend",
+    "build",
+    "built",
+    "code",
+    "contribute",
+    "create",
+    "deliver",
+    "demonstrated",
+    "design",
+    "documentation",
+    "experience",
+    "making",
+    "proven",
+    "quality",
+    "tracking",
+    "understanding"
+  ],
+  "frameworks": [
+    "google",
+    "iot"
+  ],
+  "infrastructure": [
+    "aws",
+    "azure",
+    "gcp"
+  ],
+  "languages": [
+    "c",
+    "go",
+    "golang",
+    "java",
+    "javascript",
+    "kotlin",
+    "net",
+    "python",
+    "react",
+    "vue"
+  ],
+  "leadership": [
+    "accountability",
+    "decision",
+    "decisions",
+    "lead",
+    "leadership",
+    "leading",
+    "manage",
+    "management",
+    "manager",
+    "mentor",
+    "mentoring",
+    "mentorship",
+    "responsble",
+    "team",
+    "training",
+    "using"
+  ],
+  "tools": [
+    "confluence",
+    "figma",
+    "jira"
+  ],
   "trivial": [
     "",
     "a",
@@ -34,8 +96,10 @@
     "name",
     "nice",
     "no",
+    "non",
     "of",
     "on",
+    "or",
     "our",
     "that",
     "the",
@@ -53,28 +117,5 @@
     "you",
     "youll",
     "your"
-  ],
-  "languages": [
-    "c",
-    "go",
-    "golang",
-    "java",
-    "javascript",
-    "kotlin",
-    "net",
-    "python",
-    "react",
-    "vue"
-  ],
-  "actions": [
-    "lead",
-    "leading",
-    "management",
-    "manager",
-    "mentor",
-    "mentoring",
-    "tracking",
-    "training",
-    "understanding"
   ]
 }
